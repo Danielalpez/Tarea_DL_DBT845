@@ -7,24 +7,133 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+install.packages("ggplot2")
+install.packages("readxl")
+install.packages("dplyr")
+install.packages("tidyr")
+# Habilita librerías
+
+library(readxl) # Para importar datos a R
+
+library(dplyr) # Para manipular datos
+
+library(ggplot2) # Para hacer gráficos
+
+library(tidyr) # Para manipular datos
+
+library(graphics) # Para hacer graficos
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Crear Objetos con la data
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+Medicion_IBs_Diametro <- read_excel("Datos/Datos_Medicion_IBs.xlsx", sheet = "Datos_diametro")
+Medicion_IBs_Longitud <- read_excel("Datos/Datos_Medicion_IBs.xlsx", sheet = "Datos_longitud")
+Sobrevivencia_IB <- read_excel("Datos/Datos_Sobrevivencia.xlsx", sheet = "General")
+Sobrevivencia_Prot <- read_excel("Datos/Datos_Sobrevivencia.xlsx", sheet = "Especifico")
+expresion_genica <- read_excel("Datos/Datos_expresion_genica.xlsx", sheet = "CT_PROM")
 ```
 
-## Including Plots
+# Exploracion de los datos
+```{r}
+# Cuerpos de Inclusion
+head(Medicion_IBs)
+str(Medicion_IBs) 
+summary(Medicion_IBs)
 
-You can also embed plots, for example:
+# Sobrevivencia
+head(Sobrevivencia)
+str(Sobrevivencia) 
+summary(Sobrevivencia)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+# Expresion Genica
+head(expresion_genica)
+str(expresion_genica) 
+summary(expresion_genica)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Describe la variación de las variables de estudio usando histogramas
+
+```{r}
+# Histogramas de Diamtro (IBs)
+par(mfrow = c(2,2))
+hist(Medicion_IBs_Diametro$`TNF-a`, col="pink", main="IBs de TNF-a", xlab="TNF-a(nm)", border="white")
+hist(Medicion_IBs_Diametro$`IL-6`, col="pink", main="IBs de IL-6", xlab="IL-6(nm)",xlim=c(500,2000), border="white")
+hist(Medicion_IBs_Diametro$CCL4, col="pink", main="IBs de CCL4", xlab="CCL4(nm)", border="white")
+hist(Medicion_IBs_Diametro$`TNF-a pH`, col="pink", main="IBs de TNF-a pH", xlab="TNF-a pH(nm)", border="white")
+```
+
+```{r}
+# Histogramas de Longitud (IBs)
+par(mfrow = c(2,2))
+hist(Medicion_IBs_Longitud$`TNF-a`, col="pink", main="IBs de TNF-a", xlab="TNF-a(nm)", border="white")
+hist(Medicion_IBs_Longitud$`IL-6`, col="pink", main="IBs de IL-6", xlab="IL-6(nm)",xlim=c(500,5000), border="white")
+hist(Medicion_IBs_Longitud$`TNF-a pH`, col="pink", main="IBs de TNF-a pH", xlab="TNF-a pH(nm)", border="white")
+```
+
+```{r}
+# Histogramas de expresion Genica
+par(mfrow = c(20,2))
+hist(expresion_genica$B2M_PROM, col="red", main="Expresion B2M", xlab="B2M (CT)", border="white", xlim=c(10,50))
+hist(expresion_genica$IL1B_PROM, col="red", main="Expresion IL1-B", xlab="IL1-B (CT)", border="white")
+hist(expresion_genica$IL8_PROM...8, col="red", main="Expresion IL-8", xlab="IL-8 (CT)", border="white")
+hist(expresion_genica$CATH_PROM, col="red", main="Expresion CATH", xlab="CATH (CT)", border="white")
+hist(expresion_genica$TNFa_PROM, col="red", main="Expresion TNF-a", xlab="TNF-a (CT)", border="white")
+hist(expresion_genica$NK_PROM, col="red", main="Expresion NK", xlab="NK (CT)", border="white")
+hist(expresion_genica$ELF1A_PROM, col="red", main="Expresion ELF1-A", xlab="ELF1-A", border="white")
+hist(expresion_genica$CYTL_PROM, col="red", main="Expresion CYTL", xlab="CYTL (CT)", border="white")
+hist(expresion_genica$HPRT_PROM, col="red", main="Expresion HPRT", xlab="HPRT (CT)", border="white")
+hist(expresion_genica$SOCS2_PROM, col="red", main="Expresion SOCS", xlab="SOCS (CT)", border="white")
+hist(expresion_genica$IL12b_PROM, col="red", main="Expresion IL12-B", xlab="IL12-B (CT)", border="white")
+hist(expresion_genica$TLR13_PROM, col="red", main="Expresion TLR13", xlab="TLR13 (CT)", border="white")
+hist(expresion_genica$`IL4/13_PROM`, col="cian", main="Expresion IL14-13", xlab="IL14-13 (CT)", border="white")
+hist(expresion_genica$CD8_PROM, col="red", main="Expresion CD8", xlab="CD8 (CT)", border="white")
+hist(expresion_genica$MHC1_PROM, col="red", main="Expresion MCH1", xlab="MHC1 (CT)", border="white")
+hist(expresion_genica$IL8_PROM...21, col="red", main="Expresion IL8", xlab="IL8 (CT)", border="white")
+hist(expresion_genica$ELF_PROM, col="red", main="Expresion ELF", xlab="ELF (CT)", border="white")
+hist(expresion_genica$IgM_PROM, col="red", main="Expresion IgM", xlab="IgM (CT)", border="white")
+hist(expresion_genica$MHC2_PROM, col="red", main="Expresion MHC2", xlab="MHC2 (CT)", border="white")
+hist(expresion_genica$COX2_PROM, col="red", main="Expresion COX2", xlab="COX2 (CT)", border="white")
+hist(expresion_genica$CD86_PROM, col="red", main="Expresion CD86", xlab="COX2 (CT)", border="white")
+```
+#Tablas de Frecuencia para saber si los datos estan balanceados
+
+```{r}
+table(expresion_genica$TREATMENT)
+table(expresion_genica$Group)
+table(Sobrevivencia_IB$`Dosis (mg)`)
+table(Sobrevivencia_Prot$`Dosis (mg)`)
+```
+# Establece relación entre variables cuantitativas y factores usando gráficas de correlación, boxplot, interacción o de tamaño de los efectos
+
+```{r}
+boxplot_expresion_genica1<-ggplot(expresion_genica, aes(y=`TNFa_PROM`, x=TREATMENT), main= "Boxplot Expresion de TNFa")+
+geom_boxplot()+ theme_gray()
+boxplot_expresion_genica1
+
+```
+```{r}
+boxplot_expresion_genica2<-ggplot(expresion_genica, aes(y=`TNFa_PROM`, x=Group), main= "Boxplot Expresion de TNFa")+
+geom_boxplot()+ theme_gray()
+boxplot_expresion_genica2
+```
+
+```{r}
+plot(expresion_genica$TNFa_PROM, expresion_genica$IL1B_PROM, pch = 19, col = "blue", xlab = "TNFa", ylab="IL1B", main= "Grafico de correlacion entre variables")
+ 
+```
+```{r}
+plot(ecdf(expresion_genica$TNFa_PROM), main= "Grafico de Distribucion Acumulada", xlab= "TNF-a")
+```
+
+```{r}
+#Eliminar Outliers
+LONG <- Medicion_IBs_Longitud[Medicion_IBs_Longitud$`IL-6`> 4000, c("IL-6")]
+summary(LONG)
+```
+```{r}
+
+```
+
