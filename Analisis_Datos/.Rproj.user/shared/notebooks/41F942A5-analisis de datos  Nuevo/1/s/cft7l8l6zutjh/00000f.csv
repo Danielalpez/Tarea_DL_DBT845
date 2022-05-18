@@ -1,0 +1,3 @@
+"0","# Histogramas de Diamtro (IBs)"
+"0","par(mfrow = c(2,2))"
+"0","hist(Medicion_IBs_Diametro$`TNF-a`, col=""pink"", main=""IBs de TNF-a"", xlab=""TNF-a(nm)"", border=""white"")"

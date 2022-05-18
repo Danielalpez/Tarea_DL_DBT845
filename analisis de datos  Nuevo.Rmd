@@ -1,0 +1,276 @@
+---
+title: "Tarea analisis de datos"
+author: "Daniela Lopez"
+date: '2022-04-19'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Habilita librerías
+library(readxl) # Para importar datos a R
+library(dplyr) # Para manipular datos
+library(ggplot2) # Para hacer gráficos
+library(tidyr) # Para manipular datos
+library(graphics) # Para hacer graficos
+```
+
+
+# Crear Objetos con la data
+
+```{r}
+Medicion_IBs_Diametro <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Medicion_IBs.xlsx", sheet = "Datos_diametro")
+Medicion_IBs_Longitud <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Medicion_IBs.xlsx", sheet = "Datos_longitud")
+Sobrevivencia_IB <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Sobrevivencia.xlsx", sheet = "General")
+Sobrevivencia_Prot <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Sobrevivencia.xlsx", sheet = "Especifico")
+expresion_genica <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_expresion_genica.xlsx", sheet = "CT")
+```
+
+# Exploracion de los datos
+```{r}
+# Cuerpos de Inclusion
+head(Medicion_IBs)
+str(Medicion_IBs) 
+summary(Medicion_IBs)
+# Sobrevivencia
+head(Sobrevivencia)
+str(Sobrevivencia) 
+summary(Sobrevivencia)
+# Expresion Genica
+head(expresion_genica)
+str(expresion_genica) 
+summary(expresion_genica)
+```
+
+# Describe la variación de las variables de estudio usando histogramas
+
+```{r}
+# Histogramas de Diamtro (IBs)
+par(mfrow = c(2,2))
+hist(Medicion_IBs_Diametro$`TNF-a`, col="pink", main="IBs de TNF-a", xlab="TNF-a(nm)", border="white")
+hist(Medicion_IBs_Diametro$`IL-6`, col="pink", main="IBs de IL-6", xlab="IL-6(nm)",xlim=c(500,2000), border="white")
+hist(Medicion_IBs_Diametro$CCL4, col="pink", main="IBs de CCL4", xlab="CCL4(nm)", border="white")
+hist(Medicion_IBs_Diametro$`TNF-a pH`, col="pink", main="IBs de TNF-a pH", xlab="TNF-a pH(nm)", border="white")
+```
+
+```{r}
+# Histogramas de Longitud (IBs)
+par(mfrow = c(2,2))
+hist(Medicion_IBs_Longitud$`TNF-a`, col="pink", main="IBs de TNF-a", xlab="TNF-a(nm)", border="white")
+hist(Medicion_IBs_Longitud$`IL-6`, col="pink", main="IBs de IL-6", xlab="IL-6(nm)",xlim=c(500,5000), border="white")
+hist(Medicion_IBs_Longitud$`TNF-a pH`, col="pink", main="IBs de TNF-a pH", xlab="TNF-a pH(nm)", border="white")
+```
+
+```{r}
+# Histogramas de expresion Genica
+par(mfrow = c(20,2))
+hist(expresion_genica$CT_PROM, col="red", main="Expresion de genes", xlab="CT", border="white", xlim=c(10,50))
+hist(expresion_genica$IL1B_PROM, col="red", main="Expresion IL1-B", xlab="IL1-B (CT)", border="white")
+hist(expresion_genica$IL8_PROM...8, col="red", main="Expresion IL-8", xlab="IL-8 (CT)", border="white")
+hist(expresion_genica$CATH_PROM, col="red", main="Expresion CATH", xlab="CATH (CT)", border="white")
+hist(expresion_genica$TNFa_PROM, col="red", main="Expresion TNF-a", xlab="TNF-a (CT)", border="white")
+hist(expresion_genica$NK_PROM, col="red", main="Expresion NK", xlab="NK (CT)", border="white")
+hist(expresion_genica$ELF1A_PROM, col="red", main="Expresion ELF1-A", xlab="ELF1-A", border="white")
+hist(expresion_genica$CYTL_PROM, col="red", main="Expresion CYTL", xlab="CYTL (CT)", border="white")
+hist(expresion_genica$HPRT_PROM, col="red", main="Expresion HPRT", xlab="HPRT (CT)", border="white")
+hist(expresion_genica$SOCS2_PROM, col="red", main="Expresion SOCS", xlab="SOCS (CT)", border="white")
+hist(expresion_genica$IL12b_PROM, col="red", main="Expresion IL12-B", xlab="IL12-B (CT)", border="white")
+hist(expresion_genica$TLR13_PROM, col="red", main="Expresion TLR13", xlab="TLR13 (CT)", border="white")
+hist(expresion_genica$`IL4/13_PROM`, col="cian", main="Expresion IL14-13", xlab="IL14-13 (CT)", border="white")
+hist(expresion_genica$CD8_PROM, col="red", main="Expresion CD8", xlab="CD8 (CT)", border="white")
+hist(expresion_genica$MHC1_PROM, col="red", main="Expresion MCH1", xlab="MHC1 (CT)", border="white")
+hist(expresion_genica$IL8_PROM...21, col="red", main="Expresion IL8", xlab="IL8 (CT)", border="white")
+hist(expresion_genica$ELF_PROM, col="red", main="Expresion ELF", xlab="ELF (CT)", border="white")
+hist(expresion_genica$IgM_PROM, col="red", main="Expresion IgM", xlab="IgM (CT)", border="white")
+hist(expresion_genica$MHC2_PROM, col="red", main="Expresion MHC2", xlab="MHC2 (CT)", border="white")
+hist(expresion_genica$COX2_PROM, col="red", main="Expresion COX2", xlab="COX2 (CT)", border="white")
+hist(expresion_genica$CD86_PROM, col="red", main="Expresion CD86", xlab="COX2 (CT)", border="white")
+```
+#Tablas de Frecuencia para saber si los datos estan balanceados
+
+```{r}
+table(expresion_genica$TREATMENT)
+table(expresion_genica$Group)
+table(Sobrevivencia_IB$`Dosis (mg)`)
+table(Sobrevivencia_Prot$`Dosis (mg)`)
+```
+# Establece relación entre variables cuantitativas y factores usando gráficas de correlación, boxplot, interacción o de tamaño de los efectos
+
+```{r}
+boxplot_expresion_genica1<-ggplot(expresion_genica, aes(y=`TNFa_PROM`, x=TREATMENT), main= "Boxplot Expresion de TNFa")+
+geom_boxplot()+ theme_gray()
+boxplot_expresion_genica1
+```
+```{r}
+boxplot_expresion_genica2<-ggplot(expresion_genica, aes(y=`TNFa_PROM`, x=Group), main= "Boxplot Expresion de TNFa")+
+geom_boxplot()+ theme_gray()
+boxplot_expresion_genica2
+```
+
+```{r}
+plot(expresion_genica$TNFa_PROM, expresion_genica$IL1B_PROM, pch = 19, col = "blue", xlab = "TNFa", ylab="IL1B", main= "Grafico de correlacion entre variables")
+ 
+```
+```{r}
+plot(ecdf(expresion_genica$TNFa_PROM), main= "Grafico de Distribucion Acumulada", xlab= "TNF-a")
+```
+
+```{r}
+#Eliminar Outliers
+LONG <- Medicion_IBs_Longitud[Medicion_IBs_Longitud$`IL-6`> 4000, c("IL-6")]
+summary(LONG)
+```
+
+
+```{r}
+hist_CT <- ggplot(expresion_genica, aes(CT_PROM, fill=Group)) + 
+  ggtitle("Histogram CT")+
+  geom_histogram(aes(y=..density..), col="black", bins=20) +
+  labs(x="CT", y = "Densidad")+
+  geom_density(alpha=.2, fill="#FF6666") +
+  facet_grid(~TREATMENT, scales = "free")
+  #scale_fill_manual(name="Gene",values=c("red","darkgray"),labels=c("Basal","Pre-Challenge"))
+hist_CT
+```
+```{r}
+install.packages("ggpubr")
+install.packages("gridExtra")
+install.packages ("psych")
+```
+
+
+```{r}
+library(ggplot2)
+library(ggpubr)
+library(readxl)
+library(tidyr)
+library(dplyr)
+library(psych)
+library(gridExtra)
+```
+
+```{r}
+Gene_B2M_PROM <- expresion_genica %>% filter(Gene == "B2M_PROM")
+Gene_IL1B_PROM <- expresion_genica %>% filter(Gene == "IL1B_PROM")
+Gene_IL8_PROM <- expresion_genica %>% filter(Gene == "IL8_PROM")
+Gene_CATH_PROM <- expresion_genica %>% filter(Gene == "CATH_PROM")
+Gene_NK_PROM <- expresion_genica %>% filter(Gene == "NK_PROM")
+Gene_CYTL_PROM <- expresion_genica %>% filter(Gene == "CYTL_PROM")
+Gene_HPRT_PROM <- expresion_genica %>% filter(Gene == "HPRT_PROM")
+Gene_SOCS2_PROM <- expresion_genica %>% filter(Gene == "SOCS2_PROM")
+Gene_IL12b_PROM <- expresion_genica %>% filter(Gene == "IL12b_PROM")
+Gene_TLR13_PROM <- expresion_genica %>% filter(Gene == "TLR13_PROM")
+```
+
+
+```{r}
+box_CT_B2M_PROM <- ggplot(Gene_B2M_PROM, aes(x=Group, y=CT_PROM))+
+  ggtitle("Boxplot CT B2M_PROM")+
+  scale_y_continuous(limit = c(10,45))+
+  geom_boxplot(outlier.shape = 16)+
+  facet_grid(~TREATMENT, scales = "free")+
+  stat_compare_means(method = "anova", label.y = 20)+
+  stat_compare_means(label = "p.signif", label.y = 42, method = "t.test", ref.group = ".all.")
+box_CT_B2M_PROM
+```
+
+
+```{r}
+box_CT_IL1B_PROM <- ggplot(Gene_IL1B_PROM, aes(x=Group, y=CT_PROM))+
+  ggtitle("Boxplot CT IL1B_PROM")+
+  scale_y_continuous(limit = c(10,45))+
+  geom_boxplot(outlier.shape = 16)+
+  facet_grid(~TREATMENT, scales = "free")+
+  stat_compare_means(method = "anova", label.y = 20)+
+  stat_compare_means(label = "p.signif", label.y = 42, method = "t.test", ref.group = ".all.")
+box_CT_IL1B_PROM
+```
+
+```{r}
+box_CT_IL8_PROM <- ggplot(Gene_IL8_PROM, aes(x=Group, y=CT_PROM))+
+  ggtitle("Boxplot CT IL8_PROM")+
+  scale_y_continuous(limit = c(10,45))+
+  geom_boxplot(outlier.shape = 16)+
+  facet_grid(~TREATMENT, scales = "free")+
+  stat_compare_means(method = "anova", label.y = 20)+
+  stat_compare_means(label = "p.signif", label.y = 42, method = "t.test", ref.group = ".all.")
+box_CT_IL8_PROM
+```
+
+```{r}
+box_CT_CATH_PROM <- ggplot(Gene_CATH_PROM, aes(x=Group, y=CT_PROM))+
+  ggtitle("Boxplot CT CATH_PROM")+
+  scale_y_continuous(limit = c(10,45))+
+  geom_boxplot(outlier.shape = 16)+
+  facet_grid(~TREATMENT, scales = "free")+
+  stat_compare_means(method = "anova", label.y = 20)+
+  stat_compare_means(label = "p.signif", label.y = 42, method = "t.test", ref.group = ".all.")
+box_CT_CATH_PROM
+```
+
+```{r}
+box_CT_NK_PROM <- ggplot(Gene_NK_PROM, aes(x=Group, y=CT_PROM))+
+  ggtitle("Boxplot CT NK_PROM")+
+  scale_y_continuous(limit = c(10,45))+
+  geom_boxplot(outlier.shape = 16)+
+  facet_grid(~TREATMENT, scales = "free")+
+  stat_compare_means(method = "anova", label.y = 20)+
+  stat_compare_means(label = "p.signif", label.y = 42, method = "t.test", ref.group = ".all.")
+box_CT_NK_PROM
+```
+
+```{r}
+box_CT_CYTL_PROM <- ggplot(Gene_CYTL_PROM, aes(x=Group, y=CT_PROM))+
+  ggtitle("Boxplot CT CYTL_PROM")+
+  scale_y_continuous(limit = c(10,45))+
+  geom_boxplot(outlier.shape = 16)+
+  facet_grid(~TREATMENT, scales = "free")+
+  stat_compare_means(method = "anova", label.y = 20)+
+  stat_compare_means(label = "p.signif", label.y = 42, method = "t.test", ref.group = ".all.")
+box_CT_CYTL_PROM
+```
+
+```{r}
+box_CT_HPRT_PROM <- ggplot(Gene_HPRT_PROM, aes(x=Group, y=CT_PROM))+
+  ggtitle("Boxplot CT HPRT_PROM")+
+  scale_y_continuous(limit = c(10,45))+
+  geom_boxplot(outlier.shape = 16)+
+  facet_grid(~TREATMENT, scales = "free")+
+  stat_compare_means(method = "anova", label.y = 20)+
+  stat_compare_means(label = "p.signif", label.y = 42, method = "t.test", ref.group = ".all.")
+box_CT_HPRT_PROM
+```
+
+
+```{r}
+box_CT_SOCS2_PROM <- ggplot(Gene_SOCS2_PROM, aes(x=Group, y=CT_PROM))+
+  ggtitle("Boxplot CT SOCS2_PROM")+
+  scale_y_continuous(limit = c(10,45))+
+  geom_boxplot(outlier.shape = 16)+
+  facet_grid(~TREATMENT, scales = "free")+
+  stat_compare_means(method = "anova", label.y = 20)+
+  stat_compare_means(label = "p.signif", label.y = 42, method = "t.test", ref.group = ".all.")
+box_CT_SOCS2_PROM
+```
+
+```{r}
+box_CT_IL12b_PROM <- ggplot(Gene_IL12b_PROM, aes(x=Group, y=CT_PROM))+
+  ggtitle("Boxplot CT IL12b_PROM")+
+  scale_y_continuous(limit = c(10,45))+
+  geom_boxplot(outlier.shape = 16)+
+  facet_grid(~TREATMENT, scales = "free")+
+  stat_compare_means(method = "anova", label = "p.signif", ref.group = ".all.")
+box_CT_IL12b_PROM
+```
+
+```{r}
+box_CT_TLR13_PROM <- ggplot(Gene_TLR13_PROM, aes(x=Group, y=CT_PROM))+
+  ggtitle("Boxplot CT TLR13_PROM")+
+  scale_y_continuous(limit = c(10,45))+
+  geom_boxplot(outlier.shape = 16)+
+  facet_grid(~TREATMENT, scales = "free")+
+  stat_compare_means(method = "anova", label.y = 20)+
+  stat_compare_means(label = "p.signif", label.y = 42, method = "t.test", ref.group = ".all.")
+box_CT_TLR13_PROM
+```
+

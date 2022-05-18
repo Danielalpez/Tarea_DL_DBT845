@@ -1,0 +1,1 @@
+"0","hist(Medicion_IBs_Longitud$`IL-6`, col=""pink"", main=""IBs de IL-6"", xlab=""IL-6(nm)"",xlim=c(500,5000), border=""white"")"

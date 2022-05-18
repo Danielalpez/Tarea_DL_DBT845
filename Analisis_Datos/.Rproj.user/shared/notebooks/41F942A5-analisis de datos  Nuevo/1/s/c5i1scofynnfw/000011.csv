@@ -1,0 +1,24 @@
+"0","box_CT_IL1B_PROM <- ggplot(Gene_IL1B_PROM, aes(x=Group, y=CT_PROM))+"
+"0","  ggtitle(""Boxplot CT IL1B_PROM"")+"
+"0","  scale_y_continuous(limit = c(10,45))+"
+"0","  geom_boxplot(outlier.shape = 16)+"
+"0","  facet_grid(~TREATMENT, scales = ""free"")+"
+"0","  stat_compare_means(method = ""anova"", label.y = 20)+"
+"0","  stat_compare_means(label = ""p.signif"", label.y = 42, method = ""t.test"", ref.group = "".all."")"
+"0","box_CT_IL1B_PROM"
+"2","Warning:"
+"2"," Computation failed in `stat_compare_means()`:
+Problem while computing `p = purrr::map(...)`.
+"
+"2","Warning:"
+"2"," Computation failed in `stat_compare_means()`:
+Problem while computing `p = purrr::map(...)`.
+"
+"2","Warning:"
+"2"," Computation failed in `stat_compare_means()`:
+Can't transform a data frame with duplicate names.
+"
+"2","Warning:"
+"2"," Computation failed in `stat_compare_means()`:
+Can't transform a data frame with duplicate names.
+"
