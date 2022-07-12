@@ -19,27 +19,40 @@ library(graphics) # Para hacer graficos
 # Crear Objetos con la data
 
 ```{r}
-Medicion_IBs_Diametro <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Medicion_IBs.xlsx", sheet = "Datos_diametro")
-Medicion_IBs_Longitud <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Medicion_IBs.xlsx", sheet = "Datos_longitud")
-Sobrevivencia_IB <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Sobrevivencia.xlsx", sheet = "General")
-Sobrevivencia_Prot <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Sobrevivencia.xlsx", sheet = "Especifico")
-expresion_genica <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_expresion_genica.xlsx", sheet = "CT")
+# Medicion_IBs_Diametro <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Medicion_IBs.xlsx", sheet = "Datos_diametro")
+# Medicion_IBs_Longitud <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Medicion_IBs.xlsx", sheet = "Datos_longitud")
+# Sobrevivencia_IB <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Sobrevivencia.xlsx", sheet = "General")
+# Sobrevivencia_Prot <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Sobrevivencia.xlsx", sheet = "Especifico")
+# expresion_genica <- read_excel("C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_expresion_genica.xlsx", sheet = "CT")
 ```
 
-# Exploracion de los datos
+# NUEVO Ruta de acceso general para cualquier usuario
 ```{r}
-# Cuerpos de Inclusion
-head(Medicion_IBs)
-str(Medicion_IBs) 
-summary(Medicion_IBs)
-# Sobrevivencia
-head(Sobrevivencia)
-str(Sobrevivencia) 
-summary(Sobrevivencia)
-# Expresion Genica
-head(expresion_genica)
-str(expresion_genica) 
-summary(expresion_genica)
+Medicion_IBs_Diametro <- read_excel("Datos/Datos_Medicion_IBs.xlsx", sheet = "Datos_diametro")
+Medicion_IBs_Longitud <- read_excel("Datos/Datos_Medicion_IBs.xlsx", sheet = "Datos_longitud")
+Sobrevivencia_IB <- read_excel("Datos/Datos_Sobrevivencia.xlsx", sheet = "General")
+Sobrevivencia_Prot <- read_excel("Datos/Datos_Sobrevivencia.xlsx", sheet = "Especifico")
+expresion_genica <- read_excel("Datos/Datos_expresion_genica.xlsx", sheet = "CT")
+
+```
+
+
+# Exploracion de los datos
+
+# ESTE BLOQUENO CORRE PORQUE NO ESTAN CREADOS LOS OBJETOS - REVISAR
+```{r}
+# # Cuerpos de Inclusion
+# head(Medicion_IBs)
+# str(Medicion_IBs) 
+# summary(Medicion_IBs)
+# # Sobrevivencia
+# head(Sobrevivencia)
+# str(Sobrevivencia) 
+# summary(Sobrevivencia)
+# # Expresion Genica
+# head(expresion_genica)
+# str(expresion_genica) 
+# summary(expresion_genica)
 ```
 
 # Describe la variación de las variables de estudio usando histogramas
@@ -61,31 +74,39 @@ hist(Medicion_IBs_Longitud$`IL-6`, col="pink", main="IBs de IL-6", xlab="IL-6(nm
 hist(Medicion_IBs_Longitud$`TNF-a pH`, col="pink", main="IBs de TNF-a pH", xlab="TNF-a pH(nm)", border="white")
 ```
 
+# ESTE BLOQUE NO CORRE PORQUE LA FIGURA ES DEMASIADO GRANDE
+Se recomienda usar ggplot2() + facet_wrap
+Quitting from lines 78-101 (analisis-de-datos--Nuevo.Rmd) 
+Error in plot.new() : figure margins too large
+Calls: <Anonymous> ... hist -> hist.default -> plot -> plot.histogram -> plot.new
+Execution halted
+
 ```{r}
 # Histogramas de expresion Genica
-par(mfrow = c(20,2))
-hist(expresion_genica$CT_PROM, col="red", main="Expresion de genes", xlab="CT", border="white", xlim=c(10,50))
-hist(expresion_genica$IL1B_PROM, col="red", main="Expresion IL1-B", xlab="IL1-B (CT)", border="white")
-hist(expresion_genica$IL8_PROM...8, col="red", main="Expresion IL-8", xlab="IL-8 (CT)", border="white")
-hist(expresion_genica$CATH_PROM, col="red", main="Expresion CATH", xlab="CATH (CT)", border="white")
-hist(expresion_genica$TNFa_PROM, col="red", main="Expresion TNF-a", xlab="TNF-a (CT)", border="white")
-hist(expresion_genica$NK_PROM, col="red", main="Expresion NK", xlab="NK (CT)", border="white")
-hist(expresion_genica$ELF1A_PROM, col="red", main="Expresion ELF1-A", xlab="ELF1-A", border="white")
-hist(expresion_genica$CYTL_PROM, col="red", main="Expresion CYTL", xlab="CYTL (CT)", border="white")
-hist(expresion_genica$HPRT_PROM, col="red", main="Expresion HPRT", xlab="HPRT (CT)", border="white")
-hist(expresion_genica$SOCS2_PROM, col="red", main="Expresion SOCS", xlab="SOCS (CT)", border="white")
-hist(expresion_genica$IL12b_PROM, col="red", main="Expresion IL12-B", xlab="IL12-B (CT)", border="white")
-hist(expresion_genica$TLR13_PROM, col="red", main="Expresion TLR13", xlab="TLR13 (CT)", border="white")
-hist(expresion_genica$`IL4/13_PROM`, col="cian", main="Expresion IL14-13", xlab="IL14-13 (CT)", border="white")
-hist(expresion_genica$CD8_PROM, col="red", main="Expresion CD8", xlab="CD8 (CT)", border="white")
-hist(expresion_genica$MHC1_PROM, col="red", main="Expresion MCH1", xlab="MHC1 (CT)", border="white")
-hist(expresion_genica$IL8_PROM...21, col="red", main="Expresion IL8", xlab="IL8 (CT)", border="white")
-hist(expresion_genica$ELF_PROM, col="red", main="Expresion ELF", xlab="ELF (CT)", border="white")
-hist(expresion_genica$IgM_PROM, col="red", main="Expresion IgM", xlab="IgM (CT)", border="white")
-hist(expresion_genica$MHC2_PROM, col="red", main="Expresion MHC2", xlab="MHC2 (CT)", border="white")
-hist(expresion_genica$COX2_PROM, col="red", main="Expresion COX2", xlab="COX2 (CT)", border="white")
-hist(expresion_genica$CD86_PROM, col="red", main="Expresion CD86", xlab="COX2 (CT)", border="white")
+# par(mfrow = c(20,2))
+# hist(expresion_genica$CT_PROM, col="red", main="Expresion de genes", xlab="CT", border="white", xlim=c(10,50))
+# hist(expresion_genica$IL1B_PROM, col="red", main="Expresion IL1-B", xlab="IL1-B (CT)", border="white")
+# hist(expresion_genica$IL8_PROM...8, col="red", main="Expresion IL-8", xlab="IL-8 (CT)", border="white")
+# hist(expresion_genica$CATH_PROM, col="red", main="Expresion CATH", xlab="CATH (CT)", border="white")
+# hist(expresion_genica$TNFa_PROM, col="red", main="Expresion TNF-a", xlab="TNF-a (CT)", border="white")
+# hist(expresion_genica$NK_PROM, col="red", main="Expresion NK", xlab="NK (CT)", border="white")
+# hist(expresion_genica$ELF1A_PROM, col="red", main="Expresion ELF1-A", xlab="ELF1-A", border="white")
+# hist(expresion_genica$CYTL_PROM, col="red", main="Expresion CYTL", xlab="CYTL (CT)", border="white")
+# hist(expresion_genica$HPRT_PROM, col="red", main="Expresion HPRT", xlab="HPRT (CT)", border="white")
+# hist(expresion_genica$SOCS2_PROM, col="red", main="Expresion SOCS", xlab="SOCS (CT)", border="white")
+# hist(expresion_genica$IL12b_PROM, col="red", main="Expresion IL12-B", xlab="IL12-B (CT)", border="white")
+# hist(expresion_genica$TLR13_PROM, col="red", main="Expresion TLR13", xlab="TLR13 (CT)", border="white")
+# hist(expresion_genica$`IL4/13_PROM`, col="cian", main="Expresion IL14-13", xlab="IL14-13 (CT)", border="white")
+# hist(expresion_genica$CD8_PROM, col="red", main="Expresion CD8", xlab="CD8 (CT)", border="white")
+# hist(expresion_genica$MHC1_PROM, col="red", main="Expresion MCH1", xlab="MHC1 (CT)", border="white")
+# hist(expresion_genica$IL8_PROM...21, col="red", main="Expresion IL8", xlab="IL8 (CT)", border="white")
+# hist(expresion_genica$ELF_PROM, col="red", main="Expresion ELF", xlab="ELF (CT)", border="white")
+# hist(expresion_genica$IgM_PROM, col="red", main="Expresion IgM", xlab="IgM (CT)", border="white")
+# hist(expresion_genica$MHC2_PROM, col="red", main="Expresion MHC2", xlab="MHC2 (CT)", border="white")
+# hist(expresion_genica$COX2_PROM, col="red", main="Expresion COX2", xlab="COX2 (CT)", border="white")
+# hist(expresion_genica$CD86_PROM, col="red", main="Expresion CD86", xlab="COX2 (CT)", border="white")
 ```
+
 #Tablas de Frecuencia para saber si los datos estan balanceados
 
 ```{r}
@@ -94,26 +115,35 @@ table(expresion_genica$Group)
 table(Sobrevivencia_IB$`Dosis (mg)`)
 table(Sobrevivencia_Prot$`Dosis (mg)`)
 ```
+
 # Establece relación entre variables cuantitativas y factores usando gráficas de correlación, boxplot, interacción o de tamaño de los efectos
 
+# ESTE BLOQUE NO CORRE PORQUE NO EXISTE LA VARIABLE TNFa_PROM DENTRO DEL COBJETO expresion_genica
+
+
 ```{r}
-boxplot_expresion_genica1<-ggplot(expresion_genica, aes(y=`TNFa_PROM`, x=TREATMENT), main= "Boxplot Expresion de TNFa")+
-geom_boxplot()+ theme_gray()
-boxplot_expresion_genica1
+# boxplot_expresion_genica1<-ggplot(expresion_genica, aes(y=`TNFa_PROM`, x=TREATMENT), main= "Boxplot Expresion de TNFa")+
+# geom_boxplot()+ theme_gray()
+# boxplot_expresion_genica1
 ```
+
+
 ```{r}
-boxplot_expresion_genica2<-ggplot(expresion_genica, aes(y=`TNFa_PROM`, x=Group), main= "Boxplot Expresion de TNFa")+
-geom_boxplot()+ theme_gray()
-boxplot_expresion_genica2
+# boxplot_expresion_genica2<-ggplot(expresion_genica, aes(y=`TNFa_PROM`, x=Group), main= "Boxplot Expresion de TNFa")+
+# geom_boxplot()+ theme_gray()
+# boxplot_expresion_genica2
 ```
 
 ```{r}
-plot(expresion_genica$TNFa_PROM, expresion_genica$IL1B_PROM, pch = 19, col = "blue", xlab = "TNFa", ylab="IL1B", main= "Grafico de correlacion entre variables")
+# plot(expresion_genica$TNFa_PROM, expresion_genica$IL1B_PROM, pch = 19, col = "blue", xlab = "TNFa", ylab="IL1B", main= "Grafico de correlacion entre variables")
  
 ```
+
+
 ```{r}
-plot(ecdf(expresion_genica$TNFa_PROM), main= "Grafico de Distribucion Acumulada", xlab= "TNF-a")
+# plot(ecdf(expresion_genica$TNFa_PROM), main= "Grafico de Distribucion Acumulada", xlab= "TNF-a")
 ```
+
 
 ```{r}
 #Eliminar Outliers
@@ -132,10 +162,16 @@ hist_CT <- ggplot(expresion_genica, aes(CT_PROM, fill=Group)) +
   #scale_fill_manual(name="Gene",values=c("red","darkgray"),labels=c("Basal","Pre-Challenge"))
 hist_CT
 ```
+
+# ERROR EN INSTALACION DE PAQUETES
+- DEBE ESTAR AL INICIO DEL SCRIPT
+- UNA VEZ INSTALADO DEBE DESABILITAR PARA NO TENER QUE INSTALAR CADA VEZ
+
+
 ```{r}
-install.packages("ggpubr")
-install.packages("gridExtra")
-install.packages ("psych")
+# install.packages("ggpubr")
+# install.packages("gridExtra")
+# install.packages ("psych")
 ```
 
 
