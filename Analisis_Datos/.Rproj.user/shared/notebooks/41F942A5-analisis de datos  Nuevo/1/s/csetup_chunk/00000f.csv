@@ -1,7 +1,0 @@
-"0","knitr::opts_chunk$set(echo = TRUE)"
-"0","# Habilita librerías"
-"0","library(readxl) # Para importar datos a R"
-"0","library(dplyr) # Para manipular datos"
-"0","library(ggplot2) # Para hacer gráficos"
-"0","library(tidyr) # Para manipular datos"
-"0","library(graphics) # Para hacer graficos"
