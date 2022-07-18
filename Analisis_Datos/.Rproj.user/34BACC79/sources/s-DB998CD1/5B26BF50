@@ -1,9 +1,9 @@
 {
     "id": "5B26BF50",
-    "path": "~/Tarea_DL_DBT845/analisis de datos  Nuevo.Rmd",
+    "path": "~/Tarea_DL_DBT845/analisis de datos final.Rmd",
     "project_path": null,
     "type": "r_markdown",
-    "hash": "3880193896",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1652814692635.0,
@@ -12,16 +12,16 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "last_setup_crc32": "5A3D53767e0501af",
-        "cursorPosition": "263,0",
-        "scrollLine": "254"
+        "last_setup_crc32": "DB998CD1f3e630e",
+        "cursorPosition": "135,0",
+        "scrollLine": "125"
     },
     "folds": "",
-    "lastKnownWriteTime": 1652821516,
+    "lastKnownWriteTime": 1658157424,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1652821516204,
+    "last_content_update": 1658176182112,
     "read_only": false,
     "read_only_alternatives": []
 }

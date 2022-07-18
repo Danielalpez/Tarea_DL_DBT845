@@ -5,6 +5,11 @@ date: '2022-04-19'
 output: html_document
 ---
 
+```{r}
+install.packages("dplyr")
+```
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 # Habilita librerías
@@ -13,6 +18,19 @@ library(dplyr) # Para manipular datos
 library(ggplot2) # Para hacer gráficos
 library(tidyr) # Para manipular datos
 library(graphics) # Para hacer graficos
+library(survminer) # Para facilitar el analisis visual de los datos de supervivencia
+library(survival) # Para análisis de supervivencia
+library(ggpubr) # Para hacer graficos solapados
+library(ggplot2) # Para hacer graficos
+library(tidyverse) # Conjunto de librerias
+library(multcomp) # Para funciones de un modelo lineal 
+library(car)  # Companion to Applied Regression
+library(psych)  # Para analisis descriptivo
+library(stats) # Para calculos estadisticos y generacion de numeros aleatorios
+library(knitr) # Para outputs con resultados descriptivos
+library(broom) # Para modelos predictivos
+library(lmtest) #Hacer pruebas de hipotesis sobre los supuestos
+library(pander) # Print de objetos
 ```
 
 
