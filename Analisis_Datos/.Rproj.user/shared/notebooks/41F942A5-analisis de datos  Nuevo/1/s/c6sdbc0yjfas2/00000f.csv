@@ -1,5 +1,0 @@
-"0","Medicion_IBs_Diametro <- read_excel(""C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Medicion_IBs.xlsx"", sheet = ""Datos_diametro"")"
-"0","Medicion_IBs_Longitud <- read_excel(""C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Medicion_IBs.xlsx"", sheet = ""Datos_longitud"")"
-"0","Sobrevivencia_IB <- read_excel(""C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Sobrevivencia.xlsx"", sheet = ""General"")"
-"0","Sobrevivencia_Prot <- read_excel(""C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_Sobrevivencia.xlsx"", sheet = ""Especifico"")"
-"0","expresion_genica <- read_excel(""C:/Users/Daniela/Documents/Tarea_DL_DBT845/Datos/Datos_expresion_genica.xlsx"", sheet = ""CT"")"
