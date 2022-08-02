@@ -1,0 +1,666 @@
+---
+title: "Tarea_Daniela_Lopez"
+author: "Daniela Lopez"
+date: '2022-07-17'
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r}
+install.packages("readxl")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("graphics")
+install.packages("survminer")
+install.packages("survival")
+install.packages("ggpubr")
+install.packages("tidyverse")
+install.packages("multcomp")
+install.packages("car")
+install.packages("psych")
+install.packages("stat")
+install.packages("knitr")
+install.packages("broom")
+install.packages("lmtets")
+install.packages("pander")
+install.packages("tidyr")
+install.packages("zoo")
+install.packages("ROSE")
+install.packages("factoextra")
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Habilita librerías
+library(readxl) # Para importar datos a R
+library(dplyr) # Para manipular datos
+library(ggplot2) # Para hacer gráficos
+library(tidyr) # Para manipular datos
+library(graphics) # Para hacer graficos
+library(survminer) # Para facilitar el analisis visual de los datos de supervivencia
+library(survival) # Para análisis de supervivencia
+library(ggpubr) # Para hacer graficos solapados
+library(tidyverse) # Conjunto de librerias
+library(multcomp) # Para funciones de un modelo lineal 
+library(car)  # Companion to Applied Regression
+library(psych)  # Para analisis descriptivo
+library(stats) # Para calculos estadisticos y generacion de numeros aleatorios
+library(knitr) # Para outputs con resultados descriptivos
+library(broom) # Para modelos predictivos
+library(lmtest) #Hacer pruebas de hipotesis sobre los supuestos
+library(pander) # Print de objetos
+library(gridExtra) #Permite unir graficas en un solo panel
+library(factoextra) #Permite extraer y visualizar datos multivariados, como por ejemplo en forma de cluster
+library(ggfortify)
+library(corrplot)
+library(cluster)
+library(vegan)
+```
+
+## Analisis exploratorio de los datos
+Se cuentan con 3 datas:
+1.- Medicion de Cuerpos de Inclusion (CI): estos corresponden a datos cuantitativos continuos (tamaño). 
+2.- Superviviencia: Data de supervivencia, (1-0). Variable dicotomica.
+3.- Analisis de expresion de genes (CT): datos cuantitativos conitnuos.
+
+Primero se crean objetos con la data
+
+```{r}
+CI_diametro <- read_excel ("Datos_Medicion_IBs.xlsx", sheet = "Datos diametro")
+CI_Longitud <- read_excel("Datos_Medicion_IBs.xlsx", sheet = " Datos longitud")
+sobrevivencia <- read_excel("Datos_Sobrevivencia.xlsx", sheet = "General")
+Sobrevivencia_CI <- read_excel("Datos_Sobrevivencia.xlsx", sheet = "Especifico")
+exp_gen <- read_excel("Datos_expresion_genica.xlsx", sheet = "CT_PROM")
+```
+
+```{r}
+head (CI_diametro)
+summary (CI_diametro)
+```
+
+```{r}
+head (CI_Longitud)
+summary (CI_Longitud)
+```
+
+```{r}
+head (sobrevivencia)
+summary (sobrevivencia)
+```
+
+```{r}
+head (Sobrevivencia_CI)
+summary (Sobrevivencia_CI)
+```
+
+```{r}
+head (exp_gen)
+summary (exp_gen)
+```
+
+# Determinar si existe algún desbalance en los datos
+
+```{r}
+table(CI_diametro$Proteina)
+knitr::kable(table(CI_diametro$Proteina), caption= "Tabla 1. Diametro (nm) de los CI")
+prop.table(table(CI_diametro$Proteina))
+barplot(prop.table(table(CI_diametro$Proteina)),
+        col = c("thistle", "yellow3", "slateblue2"),
+        ylim = c(0, 1),
+        main = "Distribucion")
+ggplot(CI_diametro, aes(x = CI_diametro$`diametro (nm)`), position = "identity", bins = 15, alpha = 1) +
+  labs(title="Histograma", x="Diametro (nm)", 
+       y="Frecuencia") +
+  geom_histogram(aes(color = CI_diametro$Proteina))
+ggplot(data = CI_diametro, aes(x = Proteina, y = `diametro (nm)`)) +
+geom_boxplot(fill = rainbow(3))
+plot(ecdf(CI_diametro$`diametro (nm)`), main= "Distribución acumulada empírica del Diametro de los CI", xlab="Diametro (nm)")
+
+```
+
+Los datos estan balanceados, la proteína IL-6 tiene el mayor diametro. 
+IL6 tiene valores fuera de tendencia (outlier) 2 por encima y 2 por debajo, que bien podrían eliminarse de la data en pruebas posteriores. TNF-a pH tambien presenta valores con resultados fuera de tendencia con 2 tamaños de diametro por encima de la media, y un valor por debajo, sin embargo estos estan mas cercanos a la media central en comparacion de los valores fuera de tendencia de IL-6. Aunque igual podrían eliminarse posteriormente.
+
+La proteina IL-6 Presenta los mayores diametros, mientras que parece que el pH no afecta el diametro de la proteína TNF.  
+
+```{r}
+table(CI_Longitud$Proteina)
+knitr::kable(table(CI_Longitud$Proteina), caption= "Tabla 2. Longitud (nm) de los CI")
+prop.table(table(CI_Longitud$Proteina))
+barplot(prop.table(table(CI_Longitud$Proteina)),
+        col = rainbow(3),
+        ylim = c(0, 1),
+        main = "Distribucion")
+ggplot(CI_Longitud, aes(x = CI_Longitud$`longitud (nm)`), position = "identity", bins = 15, alpha = 1) +
+  labs(title="Histograma", x="Longitud (nm)", 
+       y="Frecuencia")+
+  geom_histogram(aes(color = CI_Longitud$Proteina))
+ggplot(data = CI_Longitud, aes(x = Proteina, y = `longitud (nm)`)) +
+geom_boxplot(fill = rainbow(3))
+plot(ecdf(CI_Longitud$`longitud (nm)`), main= "Distribución acumulada empírica de la Longitud de los CI", xlab="Longitud (nm)")
+```
+
+Los datos no estan balanceados, la data esta representada por un 9,4% de la proteína IL-6, y es la proteína IL-6 quiene presenta la mayor longitud. En todos los casos se presentan valores fuera de tendencia, IL-6tiene una medida muy por encima de la media, que representa casi el doble, mientras que TNF-a tiene 5 medidas por encima de la media, siendo la maxima casi el doble de la media central, TNF-a pH tiene un valor por debajo de la media y 5 valores por encima de la media. Dado la cantidad de valores atipicos, se deberá evaluar si su eliminación no afecta los resultados en pruebas posteriores.
+
+La proteina IL-6 Presenta las mayores longitudes, pero esta poco representada.
+
+Observacion parcial: aparentemente IL-6 tiene un menor rendimiento debido al tamaño de las proteínas, ya que es la que presenta mayor diametro y longitud. 
+
+
+```{r}
+table(exp_gen$Gen)
+knitr::kable(table(exp_gen$Gen, exp_gen$TREATMENT), caption= "Tabla 3. Genes Expresados durante coinfeccion con P. salmonis")
+prop.table(table(exp_gen$Gen))
+barplot(prop.table(table(exp_gen$Gen)),
+        col = rainbow(5),
+        ylim = c(0, 1),
+        main = "Distribucion")
+ggplot(data = exp_gen, aes(x=TREATMENT, y=CT, fill=Gen)) +
+geom_boxplot()+
+  labs(y="CT")
+ggplot(exp_gen, aes(x = exp_gen$CT), position = "identity", bins = 15, alpha = 1) +
+  labs(title="Histograma", x="CT", 
+       y="Frecuencia") +
+  geom_histogram(aes(color = exp_gen$Group))
+ggplot(data = exp_gen, aes(x=Group, y=CT, fill=Gen)) +
+geom_boxplot()+
+  labs(y="CT")
+plot(ecdf(exp_gen$CT), main= "Distribución acumulada empírica de los valores de CT", xlab="CT")
+interaction.plot(exp_gen$Gen,exp_gen$Group, exp_gen$CT,  fun=mean, xlab= "Gen", ylab= "CT", col=15:1, pch=c(6,5), type="b", trace.label="Grupo")
+pairs.panels(exp_gen[,4:7], method = "pearson", hist.col = "steelblue1",  density = TRUE, font=2)
+```
+
+Los datos estan Balanceados. Hay valores de CT fuera de tendencia por sobre la media, para TNFa en el grupo CALPSUM, CATH en el grupo CALPSVS, B2M para el grupo PSVS, y por debajo de la media para IL1B e IL8 ambos en el grupo PSVS. Mientras que el boxplot por tratamiento muestra valores por sobre la media para IL1B en los No vacunados, y por debajo de la media para CATH, IL1B y TNFa en los No Vacunados, y para NK en el grupo de los Vacunados.
+
+Existe interaccion entre Grupo y Gen, y existe correlación positiva entre Tratamiento y Grupo, y entre CT y Gen con el mayor indice de correlacion, debido a que estas variables están estrechamente relacionadas, mientras que CT se correlaciona de forma negativa con tratamiento y grupo. 
+
+Observacion Parcial: La coinfección con caligus favorece la respuesta inmune, mientras que los peces vacunados e infectados con P. salmonis sin caligus presentan los mas bajos niveles de expresión de genes relacionados al sistema inmune. 
+
+```{r}
+table(sobrevivencia$Protein)
+knitr::kable(table(sobrevivencia$Protein, sobrevivencia$Hours), caption= "Tabla 4. Datos de Supervivencia por administracion de Proteinas Recombiante por hora")
+prop.table(table(sobrevivencia$Protein))
+barplot(prop.table(table(sobrevivencia$Protein)),
+        col = c("aquamarine2", "thistle"),
+        ylim = c(0, 1),
+        main = "Distribucion")
+```
+ Los datos no estan balanceados. IB representa el 75% de los datos
+ 
+```{r}
+table(Sobrevivencia_CI$Protein)
+prop.table(table(Sobrevivencia_CI$Protein))
+barplot(prop.table(table(Sobrevivencia_CI$Protein)),
+        col = c("aquamarine2", "purple", "sienna", "plum","orange"),
+        ylim = c(0, 1),
+        main = "Distribucion")
+
+```
+ 
+ Los datos no están balanceados, TNF-a está representado por un 9,6% e iRFP representa casi el 50% 
+ 
+# Analisis de sobreviencia
+
+H0= Los CI no influyen en la sobreviencia de los peces
+H1= Los CI favorecen la sobreviencia de los peces
+
+```{r}
+Su_IB_factor<-as.factor(sobrevivencia$Protein)
+IB_surv <- Surv(sobrevivencia$Hours, sobrevivencia$Sobrevivencia)
+class(IB_surv)
+IB_surv
+IB = survfit(formula=Surv(sobrevivencia$Hours,  sobrevivencia$Sobrevivencia) ~ Protein, data=sobrevivencia, na.action= na.exclude,type="kaplan-meier")
+class(IB)
+summary(IB)
+
+dif_su_IB<- survdiff(formula = Surv(sobrevivencia$Hours, sobrevivencia$Sobrevivencia) ~ Protein, data= sobrevivencia)
+dif_su_IB
+
+ggsurvplot(survfit(Surv(sobrevivencia$Hours,sobrevivencia$Sobrevivencia) ~ Protein, data = sobrevivencia, na.action = na.exclude, type="kaplan-meier"),
+pval = TRUE, conf.int = FALSE)
+```
+
+```{r}
+Su_protein_factor<-as.factor(Sobrevivencia_CI$Protein)
+CI_surv <- Surv(Sobrevivencia_CI$Hour, Sobrevivencia_CI$Sobrevivencia)
+class(CI_surv)
+CI_surv
+ps = survfit(formula=Surv(Sobrevivencia_CI$Hour,  Sobrevivencia_CI$Sobrevivencia) ~ 
+               Protein, data=Sobrevivencia_CI, na.action= na.exclude,type="kaplan-meier")
+class(ps)
+summary(ps)
+```
+
+
+```{r}
+Su_protein_factor<-as.factor(Sobrevivencia_CI$Protein)
+CI_surv <- Surv(Sobrevivencia_CI$Hour, Sobrevivencia_CI$Sobrevivencia)
+class(CI_surv)
+CI_surv
+ps = survfit(formula=Surv(Sobrevivencia_CI$Hour,  Sobrevivencia_CI$Sobrevivencia) ~ 
+               Protein, data=Sobrevivencia_CI, na.action= na.exclude,type="kaplan-meier")
+class(ps)
+summary(ps)
+```
+
+```{r}
+dif_su_CI<- survdiff(formula = Surv(Sobrevivencia_CI$Hour, Sobrevivencia_CI$Sobrevivencia) ~ Protein, data= Sobrevivencia_CI)
+dif_su_CI
+```
+
+```{r}
+ggsurvplot(survfit(Surv(Sobrevivencia_CI$Hour,Sobrevivencia_CI$Sobrevivencia) ~ Protein, data = Sobrevivencia_CI, na.action = na.exclude, type="kaplan-meier"),
+pval = TRUE, conf.int = FALSE)
+```
+
+Los Cuerpos de inclusión favorecen la sobreviencia de los peces infectados con P. salmonis, y es la proteína TNFa e IL6 quien presenta los mejores resultados. Se rechaza H0
+
+# Inferencia Estadística 
+
+La inferencia estadística permite deducir a parte de una muestra con N siginificativo (idealmente mayor a 30) y aleatorio el comportamiento de una población, en función de diversas variables que idealmente puedan influir en la población de estudios.  Para ello se aplican diversos métodos estadísticos según la naturaleza de los datos que permiten determinar conclusiones sobre los parámetros de la población de datos. De la misma manera estudia también el grado de fiabilidad de los resultados extraídos del estudio.
+
+Los métodos estadísticos se pueden dividir en dos grandes grupos, los métodos paramétricos que parten de una inferencia estadística de parámetros conocidos, aleatorios, de datos contínuos con distribución normal. Mientras que los métodos no parámetricos se aplican principalmente a datos ordinales o los que no tienen distribución normal.
+
+Para saber si el efecto de las variables estudiadas tiene efecto o no sobre la población muestral se plantean dos hipótesis. 
+
+H0= es el estado "basal" de la población, en la cual no hay influencia de la variable (es) estudiada (s).
+
+H1= plantea si la variable ejerce un efecto sobre la poblacion o inlcuso el tipo de efecto (positivo o negativo).
+
+# Expresión Genica
+Se determinan el promedio y la desviacion estandar de los CT
+
+```{r}
+CT<-exp_gen$CT
+CT
+CT_novacunados<-CT[1:102]
+CT_vacunados<-CT[103:154]
+
+mean(CT_novacunados)
+sd(CT_novacunados)
+mean(CT_vacunados)
+sd(CT_vacunados)
+CT_exp_gen<-
+  knitr::kable(c(
+    CT_novacunados_mean = mean(CT_novacunados),
+    CT_novacunados_sd = sd(CT_novacunados),
+    CT_vacunados_mean = mean(CT_vacunados),
+    CT_vacunados_sd = sd(CT_vacunados)),
+    caption= "Tabla 1. Promedio y Desviación estándar de los CT de expresión génica para salmones vacunados y no vacuandos"
+    )
+CT_exp_gen
+```
+
+El promedio de CT de peces vacunados y no vacunados es similar y la Desviación estándar en ambos grupos es muy estrecha.
+
+Se puede evaluar la correlación entre la variable treatment y CT o entre Group y CT
+
+```{r}
+Group_factor<-as.factor(exp_gen$Group)
+Group_numeric<-as.numeric(Group_factor)
+Tratment_factor<-as.factor(exp_gen$TREATMENT)
+Tratment_numeric<-as.numeric(Tratment_factor)
+Tratment_CT<-cor(Tratment_numeric, exp_gen$CT)
+Group_CT<-cor(Group_numeric, exp_gen$CT)
+Gen_factor<-as.factor(exp_gen$Gen)
+Gen_numeric<-as.numeric(Gen_factor)
+Gen_CT<-cor(Gen_numeric, exp_gen$CT)
+
+knitr::kable(c(
+  Tratment_CT = cor(Tratment_numeric, exp_gen$CT),
+    Group_CT= cor(Group_numeric, exp_gen$CT),
+      Gen_CT= cor(Gen_numeric, exp_gen$CT)),
+        caption= "Tabla 2. Correlación entre las variables tartamiento y CT y entre Grupo y CT"
+    )
+```
+Las variables tratamiento y Grupo estan correlacionada negativamente con la expresión génica (CT), mientras que la variable Gen si esta relacionada un 56% con la variable CT
+
+Para determinar la correlacion entre las variables de contrastan las hipótesis
+
+H0= la variable Tratamiento no esta relacionada con CT
+H1= la vaiable Tratamiento y CT están relacionadas
+
+```{r}
+cor_T_CT<- cor.test(x=exp_gen$CT, y=, Tratment_numeric, method = ("pearson"), conf.level = 0.95)
+ IC_cor_T_CT<- cor.test(exp_gen$CT, Tratment_numeric)$conf.int 
+ pander(cor_T_CT, caption="Prueba de hipótesis para el coeficiente de correlación entre Tratamiento y CT")
+```
+El valor de P es de 0,01 < a 0,05 por lo que se rechaza H0 y por lo tanto el Tratamiento si influye sobre el valor de CT, con un intervalo de confianza del 95%
+
+H0= la variable Grupo no esta relacionada con CT
+H1= la vaiable Grupo y CT están relacionadas
+
+```{r}
+cor_G_CT<- cor.test(x=exp_gen$CT, y=, Group_numeric, method = ("pearson"), conf.level = 0.95)
+ IC_cor_G_CT<- cor.test(exp_gen$CT, Group_numeric)$conf.int 
+ pander(cor_G_CT, caption="Prueba de hipótesis para el coeficiente de correlación entre Grupo y CT")
+```
+Se acepta la H0 porque el valor de P es mayor a 0,05 por lo tanto las variables Grupo y CT no están relacionadas
+
+```{r}
+cor_G_CT<- cor.test(x=exp_gen$CT, y=, Tratment_numeric, method = ("pearson"), conf.level = 0.95)
+ IC_cor_T_CT<- cor.test(exp_gen$CT, Tratment_numeric)$conf.int 
+ pander(cor_T_CT, caption="Prueba de hipótesis para el coeficiente de correlación entre Tratamiento y CT")
+```
+
+H0= la variable Gen no esta relacionada con CT
+H1= la vaiable Gen y CT están relacionadas
+
+```{r}
+cor_Gen_CT<- cor.test(x=exp_gen$CT, y=, Gen_numeric, method = ("pearson"), conf.level = 0.95)
+ IC_cor_Gen_CT<- cor.test(exp_gen$CT, Group_numeric)$conf.int 
+ pander(cor_Gen_CT, caption="Prueba de hipótesis para el coeficiente de correlación entre Gen y CT")
+```
+Con el valor de p <<0,05, Se rechaza H0 por lo tanto la variable Gen y CT están corrlacionadas.
+
+Dado que la variable Gen parece ser la mas atractiva para este estudio, Se puede hacer un ANOVA para determinar si los Genes tienen diferencias significativas.
+
+La técnica de análisis de varianza (ANOVA) permite separar la población en diferentes grupos (Gen o Tratamiento en este caso), sobre la media de una variable cuantitativa (CT). Es por lo tanto el test estadístico a emplear cuando se desea comparar las medias de dos o más grupos. Esta técnica puede generalizarse también para estudiar los posibles efectos de los factores sobre la varianza de una variable.
+
+Previamente se determino que los datos estan balanceados
+Se puede hacer un histograma, y boxplot 
+```{r}
+CT_plot<- ggplot(exp_gen, aes(x=CT)) +
+  geom_histogram(color="white", fill="mediumpurple", bins = 8)
+CT_plot
+T_Boxplot<-ggplot(data = exp_gen, aes(x=Gen, y=CT, fill=TREATMENT))+
+  geom_boxplot()+
+   labs(x="Tratamiento",y="CT")
+T_Boxplot
+grid.arrange(CT_plot, T_Boxplot, ncol=1, nrow =2)
+```
+En el histograma se observa un sesgo, por lo que pareciera que no hay distribucion normal. 
+
+
+Se deben evaluar los supuestos:
+
+Supuestos:
+-Independencia de las observaciones: Prueba de Durwin-Watson
+-Normalidad (robusto). Alternativa: Kruskal-Wallis
+-Homocedasticidad u Homogeneidad de varianzas: Prueba de Levene - Normalidad: Prueba de Shapiro-Wilks(). Alternativa: prueba de Welch
+
+Ruta de Trabajo:
+1.- Primero evalúe independencia..
+2.- Luego homogeneidad de varianzas..
+3.- Finalmente normalidad..
+
+
+Para hacer el ANOVA  primero se ajusta modelo lineal
+
+```{r}
+lm_CT_Gen <- lm( Gen_numeric~exp_gen$CT )
+lm_CT_Gen
+```
+
+Supuesto de Independencia:
+
+```{r}
+plot(lm_CT_Gen$residuals, pch=20, col = "magenta", ylab="Residuales_CT",
+cex.lab=1.25, cex.axis=1.25)
+abline(0,0)
+
+```
+Según el analisis de residuales los datos no estan distribuidos de forma aleatoria y repartidos con equidad a través a lo largo del Eje Vertical
+
+Hipótesis
+H0: Son independientes o no existe autocorrelación.
+H1: No son independientes y existe autocorrelación.
+
+```{r}
+dwtest(Gen_numeric ~ exp_gen$CT,
+alternative = c("two.sided"),
+iterations = 15) # library(lmtest)
+```
+Hay correlación entre las variables CT y Gen, por lo tanto no hay independencia
+
+```{r}
+dwtest(Tratment_numeric ~ exp_gen$CT,
+alternative = c("two.sided"),
+iterations = 15) # library(lmtest)
+```
+
+Hay correlación entre Tratamiento y CT por tanto no hay independencia
+
+Segundo supuesto
+
+HOMOGENEIDAD DE VARIANZAS
+
+```{r}
+plot(lm_CT_Gen, 1, pch=20, col = "black",
+cex.lab=1.5, cex.axis=1.5, sub = "")
+```
+
+
+La línea rosa es un ajuste local de los residuos (ponderada localmente) que suaviza los puntos del diagrama de dispersión para facilitar la detección patrones en los residuos. La situación ideal es que esta línea roja sea una se asemeje a una recta horizonal centrada en cero.
+
+En este caso, la línea roja no es una recta horizonal centrada en cero y los datos no parecieran estar distribuidos de forma aleatoria. 
+
+HOMOGENEIDAD DE VARIANZAS: PRUEBA DE LEVENE
+
+H0= la varianza de los grupos son iguales (existe  homocedasticidad)
+H1= la varianza de los grupos son diferentes (existe  heterocedasticidad)
+
+```{r}
+knitr::kable(leveneTest(y=exp_gen$CT, group = Gen_numeric,
+center = "median")) 
+```
+el valor de P es << a 0,05 por tanto  hay diferencias significativas entre las varianzas de los diferentes genes
+
+```{r}
+
+knitr::kable(leveneTest(y=exp_gen$CT, group = Tratment_numeric,
+center = "median")) 
+
+```
+el valor de P es = a 0,05 por tanto pudiesemos aceptar la hipotesis nula aún siendo falsa (error tipo II) y por lo tanto concluir que no hay diferencias significativas entre las varianzas de los diferentes grupos (vacunados y no vacunados)
+
+NORMALIDAD: ANÁLISIS DE RESIDUALES
+
+```{r}
+plot(lm_CT_Gen, 2, pch=20, col = "red")
+```
+
+```{r}
+qqPlot(lm_CT_Gen)
+```
+El diagrama de dispersión (rojo) pareciera ajustarse a la recta indentidad, sin embargo luego no parecen estar dentro del rango (linea azul) ajustado a la recta de identidad,  por lo que este ultimo gráfico sugiere que no hay una distribución normal de los residuos. Sin embargo, para comprobarlo se deben llevar a cabo pruebas estadísticas
+
+NORMALIDAD: PRUEBA DE SHAPIRO-WILKS
+
+H0: La distribución es normal.
+H1: La distribución no es normal.
+
+```{r}
+aov_residuals <- residuals(object = lm_CT_Gen)
+shapiro.test(x= aov_residuals)
+```
+
+Se rechaza H0 y por lo tanto se concluye que los datos no tienen una distribución normal
+
+Los datos no cumplen con los supuestos para poder hacer ANOVA por lo tanto se aplicará estadistica no parametrica, en este caso Kruskal-Wallis que es la mejor alternativa para ANOVA, pero al ser diferentes genes se puede aplicar PCA y PERMANOVA.
+
+Pasos para realizar un PCA:
+
+1) Estandarizar datos: Media 0 y varianza 1.
+2) Calcular matriz de distancia (euclideana) de valores estandarizados.
+3) Calcular valores y vectores propios (Eigenvalue y Eigenvector) de la matriz estandarizada.
+4) Interpretación y gráficas biplot.
+
+```{r}
+D_PCA<-read_excel("Datos_expresion_genica.xlsx", sheet= "CT_PCA")
+```
+
+Se hace un analisis de correlacion entre las variables a estudiar (Gen)
+
+```{r}
+pairs.panels(D_PCA[6:14])
+cor(D_PCA[6:14], method = "pearson")
+```
+
+Los genes menos correlacionados son TNF alfa (efecto proinflamatoio) e IL1B (efecto antinflamatorio), CYT con NK, TNFa, CATH (correlacion negativa), IL8, IL1B (correlacion negativa), B2M, HPRT, SOCS (correlacion negativa), los genes HPRT y SOCS estan poco relacionados con los demás genes y SOCS esta correlacionado negativamente con TNFa y NK.
+
+
+Ahora se debe elaborar un nuevo set de datos solo con las variables (los diferentes genes).
+
+```{r}
+
+D_PCA_new <- as.data.frame(D_PCA[,6:11])
+row.names(D_PCA) <- D_PCA_new$Sample
+head(D_PCA_new)
+```
+
+Ahora se realiza el PCA para el nuevo set de datos
+
+```{r}
+exp_gen_pca <- prcomp(D_PCA_new, scale = TRUE)
+exp_gen_pca
+summary(exp_gen_pca)
+```
+
+En la tabla se puede observar que B2M tiene el valor mar alto para el PC4, mientras que PC1 parece estar influenciado por IL8, y el PC2 por NK, , lo que indica que en estos componentes principales describe la mayor variación en estas variables. Haciendo un summary podemos ver que el PC1 parece explicar el 60% de la varianza. Es decir mas de la mitad de la información del conjunto de datos
+
+
+Ahora se obtiene la varianza explicada de cada Componente
+
+```{r}
+get_eigenvalue(exp_gen_pca)
+fviz_eig(exp_gen_pca)
+```
+
+El primer componente explica el 60% de la varianza y el segundo componente un 20%, esto significa que hay un 80% de la varianza explicada entre los primeros dos componentes.
+
+```{r}
+fviz_contrib(exp_gen_pca, choice = "var", axes = 1, top = 10)
+```
+La línea roja discontinua indica el valor medio de contribución. Por tanto, el gen IL8 y B2M son los es la que más contribuyen a la PC1.
+
+A continuacion se puede representar de forma grafica 
+
+```{r}
+exp_gen_pca.plot <- autoplot(exp_gen_pca,
+                          data = D_PCA,
+                          colour = "Group")
+  
+exp_gen_pca.plot
+```
+
+Para una mejor comprensión la función biplot() también se puede utilizar para trazar PCA.
+
+```{r}
+biplot (exp_gen_pca, escala = 0 )
+```
+El eje X de la biplot representa el primer componente principal donde IL8 y BM2 convergen y explican el PC1, mientras que el PC2 está explicado por CATH, IL1B, TNFa y NK.
+
+```{r}
+fviz_pca_ind(exp_gen_pca, repel = TRUE) # repel= TRUE evita que se solape el nombre de los sitios
+fviz_pca_ind(exp_gen_pca, repel = TRUE,
+             label = "none") # label = "none" hide individual labels
+
+```
+
+```{r}
+fviz_pca_ind(exp_gen_pca, repel = TRUE,
+             label = "none",
+             habillage = D_PCA$TREATMENT) # Identifica individuos por factor de clasificación
+
+```
+
+
+```{r}
+fviz_pca_ind(exp_gen_pca, repel = TRUE,
+             label = "none",
+             habillage = D_PCA$TREATMENT,
+             addEllipses = TRUE) # añade elipses para identificar factores de clasificación
+```
+```{r}
+fviz_pca_ind(exp_gen_pca, repel = TRUE,
+             label = "none",
+             habillage = D_PCA$TREATMENT,
+             addEllipses = TRUE,
+             ellipse.level=0.5) # ajusta tamaño de elipses (intervalo de confianza).
+```
+
+Lso grupos están solapados no hay una separación entre ambos según las varibales, es decir el CT de los genes de los grupos vacunados y no vacunados. 
+
+```{r}
+fviz_pca_ind(exp_gen_pca, repel = TRUE,
+             label = "none",
+             habillage = D_PCA$TREATMENT,
+             addEllipses = TRUE,
+             ellipse.level=0.60,
+             select.ind = list(cos2 = 15)) # selecciona individuos que mas contrbuyen al PCA
+
+```
+Seleccionando los individuos que mas constibuyen al PCA igual hay solapamiento
+
+```{r}
+pca.res <- pam(D_PCA_new, 2)
+# Visualización
+fviz_cluster(pca.res, geom = "point", ellipse.type = "norm",
+             show.clust.cent = TRUE,star.plot = TRUE)+
+  labs(title = "Resultados clustering K-means")+ theme_bw()
+```
+
+Con esta imagen se evidencia disminuye el grado de conflicto entre los clusters 1 y 2, ya que tienen cierta área solapada entre ambos. Esta representacion mezcla cluster y PCA, pero no indican el grado de representación de cada variable en cada uno de los componentes.
+
+
+```{r}
+fviz_pca_var(exp_gen_pca, labelsize=0.4)
+```
+En el grafico se observa que IL1B y CATH, TNFa y NK contribuyen al PCA2, mientras que IL8 y B2M contribuyen a PCA1
+```{r}
+fviz_pca_var(exp_gen_pca, col.var = "cos2", 
+             geom.var = "arrow", 
+             labelsize = 5, 
+             repel = F)
+
+```
+En el grafico se observa el % de la varianza explicada por el PC1 (Dim1) y PC2 (Dim2).  La calidad de esta representación se mide por el valor al cuadrado del coseno (cos2) del ángulo del triángulo formado por el punto del origen, la observación y su proyección sobre el componente. Para una variable dada, la suma del cos2 sobre todos los componentes principales será igual a 1, y si además la variable es perfectamente representable por solo los dos primeros componentes principales, la suma de cos2 sobre estos dos será igual a 1. En este caso, los dos primeros componentes represeantan bien el sistema.
+
+```{r}
+var <- get_pca_var(exp_gen_pca)
+corrplot(var$cos2, is.corr = FALSE)
+```
+El grafico permite la representación gráfica de la importancia de cada variable. A la Dim 1 contribuye IL8 y B2M (>90%) y en segundo lugar CATH e IL1B (>60%), y en menor medida TNFa (<30%) y NK mientras que en la Dim 2 contrbiuye CATH y NK (<50%) y en menor medida TNFa e IL1B (<30%)
+
+
+PERMANOVA (Permutational multivariate analysis of variance)
+
+Prueba No parametrica basada en la disimilitud. Puede reemplazar al ANOVA ya que es similar, permitiendo el análisis de diseños complejos (multiples variables).
+
+Se calcula la disimilitud por metodo de bray curtis
+
+```{r}
+exp_gen.dist<-vegdist(D_PCA_new, method='bray')
+summary (exp_gen.dist)
+```
+
+```{r}
+set.seed(36) #reproducible results
+
+exp_gen.div<-adonis2(exp_gen.dist~Group, data=D_PCA, permutations = 999, method="bray")
+exp_gen.div
+
+```
+
+Si planteamos como hipotesis que:
+
+H0= los grupos son iguales
+H1= los grupos son diferentes
+
+A corde a los resultados del analisis podemos concluir que al menos un grupo es diferente
+
+```{r}
+set.seed(36) #reproducible results
+
+exp_gen.div<-adonis2(exp_gen.dist~TREATMENT, data=D_PCA, permutations = 999, method="bray")
+exp_gen.div
+```
+
+La evaluacion por tratamiento indica que no existe diferencia entre Vacunados y no Vacunados.
+
+Como conclusión general podemos decir que no existe diferencia significativa entre los Salmones vacunados y no vacunados, es decir que no hay una respuesta inmune que otorgue protección contra P. salmonis en el grupo de peces vacunados, pero si se observa diferencia cuando estos están en coinfección con caligus. Por otra parte la diferencia entre los genes antiinflamatorios y con efecto proinflamatorio es lo que permite explicar los componentes principales 1 y 2, con un 80% de la varianza explicada. Pero cuando se realizó el análisis de PCA y se separó por grupos estos permanecieron solapados, por tanto esto corrobora que o hay diferencia entre grupos vacunados y no vacunados. 
+
+
+
